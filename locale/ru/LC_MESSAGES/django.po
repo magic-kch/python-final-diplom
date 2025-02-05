@@ -1,0 +1,26 @@
+msgid "email address"
+msgstr "электронный адрес"
+
+msgid "username"
+msgstr "имя пользователя"
+
+msgid "A user with that username already exists."
+msgstr "Пользователь с таким именем уже существует."
+
+msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr "Обязательное поле. Максимум 150 символов. Буквы, цифры и @/./+/-/_ только."
+
+msgid "Designates whether this user should be treated as active. Unselect this instead of deleting accounts."
+msgstr "Определяет, следует ли считать этого пользователя активным. Отмените этот флажок, вместо того чтобы удалять аккаунт."
+
+msgid "active"
+msgstr "активный"
+
+msgid "The User which is associated to this password reset token"
+msgstr "Пользователь, связанный с этим токеном сброса пароля"
+
+msgid "When was this token generated"
+msgstr "Когда был сгенерирован этот токен"
+
+msgid "Key"
+msgstr "Ключ"
