@@ -7,7 +7,7 @@ from yaml import load as load_yaml, Loader
 from requests import get
 
 from backend.models import Shop, Product
-from reference.netology_pd_diplom.backend.models import Category, Parameter
+from backend.models import Category, Parameter
 
 
 class PartnerUpdate(APIView):
@@ -18,8 +18,8 @@ class PartnerUpdate(APIView):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
 
-        if request.user.type != 'shop':
-            return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
+        # if request.user.type != 'shop':
+        #     return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
 
         url = request.data.get('url')
         if url:
@@ -62,6 +62,6 @@ class PartnerUpdate(APIView):
 
                 return JsonResponse({'Status': True})
 
-        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+        return JsonResponse({'Status': False, 'Errors': 'Not enough arguments'})
 
 
