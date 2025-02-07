@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,12 +83,12 @@ WSGI_APPLICATION = 'orders.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'netology_pd_diplom',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql_psycopg2'),
+        'NAME': os.getenv('DB_NAME', 'netology_pd_diplom'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -131,5 +134,37 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+AUTH_USER_MODEL = 'backend.User'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# при использовании TLS
+# EMAIL_USE_TLS = True; EMAIL_PORT = 587
+
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.mail.ru')
+
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.getenv('EMAIL_PORT', '465')
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True')
+# адрес для отправки системных сообщений
+SERVER_EMAIL = EMAIL_HOST_USER
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 40,
+
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+
+    ),
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+
+}
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
