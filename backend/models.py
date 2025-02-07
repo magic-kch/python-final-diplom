@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser, PermissionsMixin, Group, Permission
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.db.models import Sum
 from django.utils.html import format_html
 from django.db import models
 from django.utils.safestring import mark_safe
@@ -87,23 +88,6 @@ class User(AbstractUser):
         )
     )
     type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5, default='buyer')
-    groups = models.ManyToManyField(
-        Group,
-        verbose_name=_("группы"),
-        blank=True,
-        help_text=_(
-            "Группы, в которые входит этот пользователь. Пользователь получит все разрешения, "
-            "предоставленные каждой из его групп."
-        ),
-        related_name="backend_user_groups",
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        verbose_name=_("разрешения пользователя"),
-        blank=True,
-        help_text=_("Особые разрешения для этого пользователя."),
-        related_name="backend_user_permissions",
-    )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
