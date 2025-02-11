@@ -42,7 +42,7 @@ def password_reset_token_created(sender, instance, reset_password_token, **kwarg
 @receiver(post_save, sender=User)
 def new_user_registered_signal(sender: Type[User], instance: User, created: bool, **kwargs):
     """
-     отправляем письмо с подтрердждением почты
+     отправляем письмо с подтверждением почты
     """
     if created and not instance.is_active:
         # send an e-mail to the user
