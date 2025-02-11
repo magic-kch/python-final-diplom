@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+
+from django.conf.global_settings import DEFAULT_FROM_EMAIL
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_rest_passwordreset',
     'rest_framework',
+    'rest_framework.authtoken',
 
     'backend',
 ]
@@ -102,6 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 10},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -137,15 +141,17 @@ STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'backend.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# при использовании TLS
-# EMAIL_USE_TLS = True; EMAIL_PORT = 587
+# для отладки в консоли
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.mail.ru')
 
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'magic.diplom@mail.ru')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.getenv('EMAIL_PORT', '465')
-EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', False) # EMAIL_PORT = 587
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', True) # EMAIL_PORT = 465
 # адрес для отправки системных сообщений
 SERVER_EMAIL = EMAIL_HOST_USER
 
