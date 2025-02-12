@@ -76,7 +76,7 @@ class OrderItemCreateSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    ordered_items = OrderItemCreateSerializer(read_only=True, many=True)
+    ordered_items = OrderItemSerializer(read_only=True, many=True)
     total_sum = serializers.IntegerField()
     contact = ContactSerializer(read_only=True)
 
