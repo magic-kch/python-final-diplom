@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import ListAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,7 +14,7 @@ from requests import get
 
 
 from backend.models import Shop, Product, Category, Parameter, ProductParameter, OrderItem, Order, Contact, \
-    ConfirmEmailToken
+    ConfirmEmailToken, ProductInfo
 
 from backend.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
     OrderItemSerializer
@@ -193,6 +194,23 @@ class LoginAccount(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Not enough arguments'})
 
 
+class CategoryView(ListAPIView):
+    """
+    Класс для просмотра категорий
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class ShopView(ListAPIView):
+    """
+    Класс для просмотра списка магазинов
+    """
+    queryset = Shop.objects.filter(state=True)
+    serializer_class = ShopSerializer
+
+
+
 class PartnerUpdate(APIView):
     """
     Класс для обновления прайса от поставщика
@@ -201,8 +219,8 @@ class PartnerUpdate(APIView):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
 
-        # if request.user.type != 'shop':
-        #     return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
+        if request.user.type != 'shop':
+            return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
 
         url = request.data.get('url')
         if url:
@@ -213,11 +231,8 @@ class PartnerUpdate(APIView):
                 return JsonResponse({'Status': False, 'Error': str(e)})
             else:
                 stream = get(url).content
-
                 data = load_yaml(stream, Loader=Loader)
-
                 shop, _ = Shop.objects.get_or_create(name=data['shop'], user_id=request.user.id)
-
                 for category in data['categories']:
                     category_object, _ = Category.objects.get_or_create(id=category['id'], name=category['name'])
                     category_object.shops.add(shop.id)
@@ -225,12 +240,12 @@ class PartnerUpdate(APIView):
                 """
                 Удаление остатков из базы
                 """
-                Product.objects.filter(shop_id=shop.id).delete()
+                ProductInfo.objects.filter(shop_id=shop.id).delete()
 
                 for item in data['goods']:
                     product, _ = Product.objects.get_or_create(name=item['name'], category_id=item['category'])
 
-                    product_info = Product.objects.create(product_id=product.id,
+                    product_info = ProductInfo.objects.create(product_id=product.id,
                                                           external_id=item['id'],
                                                           model=item['model'],
                                                           price=item['price'],
@@ -239,8 +254,8 @@ class PartnerUpdate(APIView):
                                                           shop_id=shop.id)
                     for name, value in item['parameters'].items():
                         parameter_object, _ = Parameter.objects.get_or_create(name=name)
-                        product_info.product_parameters.create(parameter_info_id=product_info.id,
-                                                               parameter_id=parameter_object.id,
+                        product_info.product_params.create(product_info=product_info,
+                                                               parameter=parameter_object,
                                                                value=value)
 
                 return JsonResponse({'Status': True})

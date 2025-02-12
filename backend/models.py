@@ -119,7 +119,7 @@ class Shop(models.Model):
 class Category(models.Model):
     objects = models.manager.Manager()
     name = models.CharField(max_length=50, verbose_name='Название')
-    slug = models.SlugField(verbose_name='Слаг', unique=True)
+    # slug = models.SlugField(verbose_name='Слаг', unique=True)
     shops = models.ManyToManyField(Shop, verbose_name='Магазины', related_name='categories', blank=True)
 
     class Meta:
@@ -134,7 +134,7 @@ class Category(models.Model):
 class Product(models.Model):
     objects = models.manager.Manager()
     name = models.CharField(max_length=80, verbose_name='Название')
-    slug = models.SlugField(verbose_name='Слаг', unique=True)
+    # slug = models.SlugField(verbose_name='Слаг', unique=True)
     category = models.ForeignKey(Category, verbose_name='Категория', related_name='products', blank=True,
                                  on_delete=models.CASCADE)
 
