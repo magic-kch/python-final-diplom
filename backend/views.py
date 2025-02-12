@@ -18,7 +18,7 @@ from backend.models import Shop, Product, Category, Parameter, ProductParameter,
     ConfirmEmailToken, ProductInfo
 
 from backend.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
-    OrderItemSerializer, OrderSerializer
+    OrderItemSerializer, OrderSerializer, ContactSerializer
 
 
 class RegisterAccount(APIView):
@@ -398,8 +398,6 @@ class BasketView(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
-
-
 class PartnerUpdate(APIView):
     """
     Класс для обновления прайса от поставщика
@@ -452,3 +450,118 @@ class PartnerUpdate(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Not enough arguments'})
 
 
+class ContactView(APIView):
+    """
+       A class for managing contact information.
+
+       Methods:
+       - get: Retrieve the contact information of the authenticated user.
+       - post: Create a new contact for the authenticated user.
+       - put: Update the contact information of the authenticated user.
+       - delete: Delete the contact of the authenticated user.
+
+       Attributes:
+       - None
+       """
+
+    # получить мои контакты
+    def get(self, request, *args, **kwargs):
+        """
+           Retrieve the contact information of the authenticated user.
+
+           Args:
+           - request (Request): The Django request object.
+
+           Returns:
+           - Response: The response containing the contact information.
+       """
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+        contact = Contact.objects.filter(
+            user_id=request.user.id)
+        serializer = ContactSerializer(contact, many=True)
+        return Response(serializer.data)
+
+    # добавить новый контакт
+    def post(self, request, *args, **kwargs):
+        """
+           Create a new contact for the authenticated user.
+
+           Args:
+           - request (Request): The Django request object.
+
+           Returns:
+           - JsonResponse: The response indicating the status of the operation and any errors.
+       """
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+
+        if {'city', 'street', 'phone'}.issubset(request.data):
+            data = request.data.copy()
+            data.update({'user': request.user.id})
+            serializer = ContactSerializer(data=data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse({'Status': True})
+            else:
+                return JsonResponse({'Status': False, 'Errors': serializer.errors})
+
+        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+
+    # удалить контакт
+    def delete(self, request, *args, **kwargs):
+        """
+           Delete the contact of the authenticated user.
+
+           Args:
+           - request (Request): The Django request object.
+
+           Returns:
+           - JsonResponse: The response indicating the status of the operation and any errors.
+       """
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+
+        items_sting = request.data.get('items')
+        if items_sting:
+            items_list = items_sting.split(',')
+            query = Q()
+            objects_deleted = False
+            for contact_id in items_list:
+                if contact_id.isdigit():
+                    query = query | Q(user_id=request.user.id, id=contact_id)
+                    objects_deleted = True
+
+            if objects_deleted:
+                deleted_count = Contact.objects.filter(query).delete()[0]
+                return JsonResponse({'Status': True, 'Удалено объектов': deleted_count})
+        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+
+    # редактировать контакт
+    def put(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            """
+               Update the contact information of the authenticated user.
+
+               Args:
+               - request (Request): The Django request object.
+
+               Returns:
+               - JsonResponse: The response indicating the status of the operation and any errors.
+            """
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+
+        if 'id' in request.data:
+            if request.data['id'].isdigit():
+                contact = Contact.objects.filter(id=request.data['id'], user_id=request.user.id).first()
+                print(contact)
+                if contact:
+                    serializer = ContactSerializer(contact, data=request.data, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        return JsonResponse({'Status': True})
+                    else:
+                        return JsonResponse({'Status': False, 'Errors': serializer.errors})
+
+        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
