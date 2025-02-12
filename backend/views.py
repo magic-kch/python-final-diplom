@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import URLValidator
 from django.http import JsonResponse
+from django.db.models import Q, Sum, F
 from django.shortcuts import render
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
@@ -209,6 +210,47 @@ class ShopView(ListAPIView):
     queryset = Shop.objects.filter(state=True)
     serializer_class = ShopSerializer
 
+
+class ProductInfoView(APIView):
+    """
+        A class for searching products.
+
+        Methods:
+        - get: Retrieve the product information based on the specified filters.
+
+        Attributes:
+        - None
+        """
+
+    def get(self, request: Request, *args, **kwargs):
+        """
+               Retrieve the product information based on the specified filters.
+
+               Args:
+               - request (Request): The Django request object.
+
+               Returns:
+               - Response: The response containing the product information.
+               """
+        query = Q(shop__state=True)
+        shop_id = request.query_params.get('shop_id')
+        category_id = request.query_params.get('category_id')
+
+        if shop_id:
+            query = query & Q(shop_id=shop_id)
+
+        if category_id:
+            query = query & Q(product__category_id=category_id)
+
+        # фильтруем и отбрасываем дуликаты
+        queryset = ProductInfo.objects.filter(
+            query).select_related(
+            'shop', 'product__category').prefetch_related(
+            'product_params', 'product_params__parameter').distinct()
+
+        serializer = ProductInfoSerializer(queryset, many=True)
+
+        return Response(serializer.data)
 
 
 class PartnerUpdate(APIView):
