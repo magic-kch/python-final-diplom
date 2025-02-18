@@ -1,3 +1,5 @@
+from distutils.util import strtobool
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import URLValidator
@@ -450,6 +452,64 @@ class PartnerUpdate(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Not enough arguments'})
 
 
+class PartnerState(APIView):
+    """
+       A class for managing partner state.
+
+       Methods:
+       - get: Retrieve the state of the partner.
+
+       Attributes:
+       - None
+       """
+    # получить текущий статус
+    def get(self, request, *args, **kwargs):
+        """
+               Retrieve the state of the partner.
+
+               Args:
+               - request (Request): The Django request object.
+
+               Returns:
+               - Response: The response containing the state of the partner.
+               """
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+
+        if request.user.type != 'shop':
+            return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
+
+        shop = request.user.shop
+        serializer = ShopSerializer(shop)
+        return Response(serializer.data)
+
+    # изменить текущий статус
+    def post(self, request, *args, **kwargs):
+        """
+               Update the state of a partner.
+
+               Args:
+               - request (Request): The Django request object.
+
+               Returns:
+               - JsonResponse: The response indicating the status of the operation and any errors.
+               """
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+
+        if request.user.type != 'shop':
+            return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
+        state = request.data.get('state')
+        if state:
+            try:
+                Shop.objects.filter(user_id=request.user.id).update(state=strtobool(state))
+                return JsonResponse({'Status': True})
+            except ValueError as error:
+                return JsonResponse({'Status': False, 'Errors': str(error)})
+
+        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+
+
 class ContactView(APIView):
     """
        A class for managing contact information.
@@ -565,3 +625,4 @@ class ContactView(APIView):
                         return JsonResponse({'Status': False, 'Errors': serializer.errors})
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+
