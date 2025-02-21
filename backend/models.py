@@ -1,10 +1,9 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser, PermissionsMixin, Group, Permission
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db.models import Sum
 from django.utils.html import format_html
 from django.db import models
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.tokens import get_token_generator
 
@@ -63,7 +62,7 @@ class User(AbstractUser):
     Default custom user model for netology_pd_diplom.
     """
     REQUIRED_FIELDS = []
-    objects = UserManager
+    objects = UserManager()
     USERNAME_FIELD = 'email'
     email = models.EmailField(_('email address'), unique=True)
     company = models.CharField(verbose_name='Компания', max_length=40, blank=True)
