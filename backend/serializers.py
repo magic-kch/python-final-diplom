@@ -52,11 +52,11 @@ class ProductParameterSerializer(serializers.ModelSerializer):
 
 class ProductInfoSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
-    product_parameter = ProductParameterSerializer(read_only=True, many=True)
+    product_params = ProductParameterSerializer(read_only=True, many=True)
 
     class Meta:
         model = ProductInfo
-        fields = ('id', 'model', 'product', 'shop', 'quantity', 'price', 'price_rrc', 'product_parameter')
+        fields = ('id', 'model', 'product', 'shop', 'quantity', 'price', 'price_rrc', 'product_params')
         read_only_fields = ('id',)
 
 
