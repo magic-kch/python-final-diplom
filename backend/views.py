@@ -287,7 +287,7 @@ class BasketView(APIView):
             user_id=request.user.id, state='basket').prefetch_related(
             'ordered_items__product_info__product__category',
             'ordered_items__product_info__product_params__parameter').annotate(
-            total_sum=Sum(F('ordered_items__quantity') * F('ordered_items__product_info__price'))).distinct()
+            total_sum=Sum(F('ordered_items__quantity') * F('ordered_items__product_info__price_rrc'))).distinct()
 
         serializer = OrderSerializer(basket, many=True)
         return Response(serializer.data)

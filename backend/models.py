@@ -150,9 +150,9 @@ class ProductInfo(models.Model):
     objects = models.manager.Manager()
     model = models.CharField(max_length=80, verbose_name='Модель', blank=True)
     external_id = models.PositiveIntegerField(verbose_name='Внешний ИД')
-    product = models.ForeignKey(Product, verbose_name='Продукт', related_name='productinfo', blank=True,
+    product = models.ForeignKey(Product, verbose_name='Продукт', related_name='product_info', blank=True,
                                 on_delete=models.CASCADE)
-    shop = models.ForeignKey(Shop, verbose_name='Магазин', related_name='product_infos', blank=True,
+    shop = models.ForeignKey(Shop, verbose_name='Магазин', related_name='product_info', blank=True,
                              on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name="Количество")
     price = models.PositiveIntegerField(verbose_name='Цена')
@@ -164,7 +164,8 @@ class ProductInfo(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['product', 'shop', 'external_id'], name='unique_product_info'),
         ]
-
+    def __str__(self):
+        return f"{self.product}"
 
 class Parameter(models.Model):
     objects = models.manager.Manager()
@@ -222,7 +223,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь',
                              related_name='orders', blank=True,
                              on_delete=models.CASCADE)
-    dt = models.DateTimeField(auto_now_add=True)
+    dt = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     state = models.CharField(verbose_name='Статус', choices=STATE_CHOICES, max_length=15)
     contact = models.ForeignKey(Contact, verbose_name='Контакт',
                                 blank=True, null=True,
