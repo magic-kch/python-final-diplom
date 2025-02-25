@@ -138,11 +138,12 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+# модель пользователя
 AUTH_USER_MODEL = 'backend.User'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # для отладки в консоли
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.mail.ru')
@@ -150,7 +151,7 @@ EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.mail.ru')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'magic.diplom@mail.ru')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.getenv('EMAIL_PORT', '465')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', False) # EMAIL_PORT = 587
+# EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', False) # EMAIL_PORT = 587
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', True) # EMAIL_PORT = 465
 # адрес для отправки системных сообщений
 SERVER_EMAIL = EMAIL_HOST_USER
