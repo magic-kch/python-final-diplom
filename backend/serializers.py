@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from backend.models import User, Category, Shop, ProductInfo, Product, ProductParameter, OrderItem, Order, Contact
-
+from django.core.exceptions import ObjectDoesNotExist
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,6 +18,17 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'first_name', 'last_name', 'email', 'company', 'position', 'contacts')
         read_only_fields = ('id',)
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        try:
+            User.objects.get(email=value)
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError('Пользователь с таким email не существует')
+        return value
 
 
 class CategorySerializer(serializers.ModelSerializer):

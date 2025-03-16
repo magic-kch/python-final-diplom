@@ -6,6 +6,9 @@ from django.core.validators import URLValidator
 from django.http import JsonResponse
 from django.db import IntegrityError
 from django.db.models import Q, Sum, F
+from django.shortcuts import redirect, render
+
+from backend.tasks import reset_password_request_token
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -16,12 +19,25 @@ from yaml import load as load_yaml, Loader
 from requests import get
 from ujson import loads as load_json
 
-from backend.models import Shop, Product, Category, Parameter, ProductParameter, OrderItem, Order, Contact, \
+from backend.models import Shop, Product, Category, Parameter, User, OrderItem, Order, Contact, \
     ConfirmEmailToken, ProductInfo
 
 from backend.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
-    OrderItemSerializer, OrderSerializer, ContactSerializer
+    OrderItemSerializer, OrderSerializer, ContactSerializer, PasswordResetSerializer
 from backend.signals import new_order
+
+class PasswordResetView(APIView):
+    def post(self, request):
+        serializer = PasswordResetSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            user = User.objects.get(email=email)
+            user_id = user.id
+            print('запуск задачи celery')
+            reset_password_request_token.delay(user_id)  # вызываем задачу в фоновом режиме
+            return Response({'message': 'Письмо с инструкциями по сбросу пароля отправлено на ваш email'}, status=200)
+        else:
+            return Response(serializer.errors, status=400)
 
 
 class RegisterAccount(APIView):
