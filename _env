@@ -1,7 +1,7 @@
 # email parameters
-EMAIL_HOST=smtp.mail.ru #Почтовый сервер
-EMAIL_HOST_USER=ВАША@ПОЧТА
-EMAIL_HOST_PASSWORD=ВАШ_ПАРОЛЬ_ОТ_ПОЧТЫ
+EMAIL_HOST=smtp.mail.ru
+EMAIL_HOST_USER=magic.diplom@mail.ru
+EMAIL_HOST_PASSWORD=EMAIL_PASSWORD  # django-smtp
 EMAIL_PORT=465
 EMAIL_USE_SSL=True
 EMAIL_USE_TLS=False
@@ -10,7 +10,7 @@ SERVER_EMAIL=EMAIL_HOST_USER
 # db parameters
 DB_ENGINE=django.db.backends.postgresql_psycopg2
 DB_NAME=netology_pd_diplom
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_HOST=127.0.0.1
+DB_USER=diplom_user
+DB_PASSWORD=pg_postgres
+DB_HOST=postgres
 DB_PORT=5432
