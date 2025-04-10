@@ -1,18 +1,6 @@
-# from celery import Celery
-# import os
-#
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orders.settings')
-# app = Celery('backend')
-#
-# app.config_from_object('django.conf:settings', namespace='CELERY')
-#
-# app.conf.broker_connection_retry_on_startup = True
-# # Load task modules from all registered Django app configs.
-# app.autodiscover_tasks()
-# Standard library imports
 import os
-
-# Celery
+# при добавление этой строки celery не запускается
+# from .tasks import reset_password_request_token
 from celery import Celery
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orders.settings')
@@ -22,7 +10,7 @@ app = Celery('backend')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.broker_connection_retry_on_startup = True
 app.conf.update(
-    broker_url=os.getenv('REDIS_URL', 'redis://localhost:6379/0'),
+    broker_url='redis://localhost:6379/0',
 )
 
 app.autodiscover_tasks()
