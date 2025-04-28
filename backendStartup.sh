@@ -3,6 +3,7 @@
 set -x
 
 echo "Начинаем миграцию базы данных..."
+python manage.py makemigrations backend
 python manage.py migrate
 echo "Миграция базы данных успешно завершена!"
 
@@ -11,7 +12,7 @@ python manage.py collectstatic --noinput
 echo "Сборка статических файлов успешно завершена!"
 
 echo "Создаем суперпользователя..."
-#TO_DO python manage.py createsuperuser --email admin@admin.ru --skip-checks
+python manage.py create_superuser
 
 echo "Начинаем запуск сервера..."
 gunicorn --bind 0.0.0.0:8000 -w 3 orders.wsgi
