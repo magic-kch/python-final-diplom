@@ -3,8 +3,20 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
+from django.db import transaction
+from requests import get
+from yaml import load as load_yaml, Loader
 
-from backend.models import User, ConfirmEmailToken
+from backend.models import (
+    User,
+    ConfirmEmailToken,
+    Shop,
+    Category,
+    Product,
+    ProductInfo,
+    Parameter,
+    ProductParameter,
+)
 
 
 @shared_task
@@ -32,3 +44,60 @@ def reset_password_request_token(task_id):
     )
 
     print("Письмо с токеном сброса пароля отправлено на адрес {}".format(email))
+
+
+@shared_task(bind=True)
+def update_partner_price(self, shop_id, url):
+    try:
+        with transaction.atomic():
+            shop = Shop.objects.get(id=shop_id)
+
+            # Загрузка и обработка YAML
+            stream = get(url).content
+            data = load_yaml(stream, Loader=Loader)
+
+            # Обновление названия магазина
+            shop.name = data['shop']
+            shop.save()
+
+            # Обработка категорий
+            for category in data['categories']:
+                category_obj, _ = Category.objects.get_or_create(
+                    id=category['id'],
+                    defaults={'name': category['name']}
+                )
+                category_obj.shops.add(shop)
+                category_obj.save()
+
+            # Удаление старых товаров
+            ProductInfo.objects.filter(shop=shop).delete()
+
+            # Добавление новых товаров
+            for item in data['goods']:
+                product, _ = Product.objects.get_or_create(
+                    name=item['name'],
+                    category_id=item['category']
+                )
+
+                product_info = ProductInfo.objects.create(
+                    product=product,
+                    external_id=item['id'],
+                    model=item['model'],
+                    price=item['price'],
+                    price_rrc=item['price_rrc'],
+                    quantity=item['quantity'],
+                    shop=shop
+                )
+
+                for name, value in item['parameters'].items():
+                    parameter, _ = Parameter.objects.get_or_create(name=name)
+                    ProductParameter.objects.create(
+                        product_info=product_info,
+                        parameter=parameter,
+                        value=value
+                    )
+
+        return {'status': 'success', 'message': 'Price list updated'}
+
+    except Exception as e:
+        self.retry(exc=e, countdown=60, max_retries=3)

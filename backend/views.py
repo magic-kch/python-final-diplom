@@ -7,16 +7,15 @@ from django.http import JsonResponse
 from django.db import IntegrityError
 from django.db.models import Q, Sum, F
 from django.shortcuts import redirect, render
+from rest_framework import status
 
-from backend.tasks import reset_password_request_token
+from backend.tasks import reset_password_request_token, update_partner_price
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from yaml import load as load_yaml, Loader
-from requests import get
 from ujson import loads as load_json
 
 from backend.models import Shop, Product, Category, Parameter, User, OrderItem, Order, Contact, \
@@ -419,54 +418,67 @@ class BasketView(APIView):
 
 class PartnerUpdate(APIView):
     """
-    Класс для обновления прайса от поставщика
+    Асинхронное обновление прайса от поставщика
     """
+
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
+            return Response(
+                {'Status': False, 'Error': 'Log in required'},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
-        if request.user.type != 'shop':
-            return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
+        if request.user.type != 'shop' and not request.user.is_staff:
+            return Response(
+                {'Status': False, 'Error': 'Только для магазинов и администраторов'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Для администраторов получаем shop_id из запроса
+        if request.user.is_staff:
+            shop_id = request.data.get('shop_id')
+            if not shop_id:
+                return Response(
+                    {'Status': False, 'Error': 'Для администраторов укажите shop_id'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            try:
+                shop = Shop.objects.get(id=shop_id)
+            except Shop.DoesNotExist:
+                return Response(
+                    {'Status': False, 'Error': 'Магазин не найден'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            # Для обычных магазинов используем привязанный магазин
+            shop, _ = Shop.objects.get_or_create(user=request.user)
 
         url = request.data.get('url')
         if url:
-            validate_url = URLValidator()
             try:
-                validate_url(url)
+                URLValidator()(url)
             except ValidationError as e:
-                return JsonResponse({'Status': False, 'Error': str(e)})
-            else:
-                stream = get(url).content
-                data = load_yaml(stream, Loader=Loader)
-                shop, _ = Shop.objects.get_or_create(name=data['shop'], user_id=request.user.id)
-                for category in data['categories']:
-                    category_object, _ = Category.objects.get_or_create(id=category['id'], name=category['name'])
-                    category_object.shops.add(shop.id)
-                    category_object.save()
-                """
-                Удаление остатков из базы
-                """
-                ProductInfo.objects.filter(shop_id=shop.id).delete()
+                return Response(
+                    {'Status': False, 'Error': str(e)},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-                for item in data['goods']:
-                    product, _ = Product.objects.get_or_create(name=item['name'], category_id=item['category'])
+            # Запуск асинхронной задачи с передачей shop_id
+            task = update_partner_price.delay(
+                shop_id=shop.id,
+                url=url
+            )
 
-                    product_info = ProductInfo.objects.create(product_id=product.id,
-                                                          external_id=item['id'],
-                                                          model=item['model'],
-                                                          price=item['price'],
-                                                          price_rrc=item['price_rrc'],
-                                                          quantity=item['quantity'],
-                                                          shop_id=shop.id)
-                    for name, value in item['parameters'].items():
-                        parameter_object, _ = Parameter.objects.get_or_create(name=name)
-                        product_info.product_params.create(product_info=product_info,
-                                                               parameter=parameter_object,
-                                                               value=value)
+            return Response({
+                'Status': True,
+                'TaskID': task.id,
+                'Message': 'Обновление прайса запущено'
+            }, status=status.HTTP_202_ACCEPTED)
 
-                return JsonResponse({'Status': True})
-
-        return JsonResponse({'Status': False, 'Errors': 'Not enough arguments'})
+        return Response(
+            {'Status': False, 'Errors': 'Не указан URL'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class PartnerState(APIView):
