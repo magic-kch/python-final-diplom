@@ -1,4 +1,5 @@
 from distutils.util import strtobool
+from celery.result import AsyncResult
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
@@ -6,21 +7,20 @@ from django.core.validators import URLValidator
 from django.http import JsonResponse
 from django.db import IntegrityError
 from django.db.models import Q, Sum, F
-from django.shortcuts import redirect, render
-from rest_framework import status
 
-from backend.tasks import reset_password_request_token, update_partner_price
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from ujson import loads as load_json
 
+from backend.tasks import reset_password_request_token, update_partner_price
 from backend.models import Shop, Product, Category, Parameter, User, OrderItem, Order, Contact, \
     ConfirmEmailToken, ProductInfo
-
 from backend.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
     OrderItemSerializer, OrderSerializer, ContactSerializer, PasswordResetSerializer
 from backend.signals import new_order
@@ -759,3 +759,32 @@ class OrderView(APIView):
                         return JsonResponse({'Status': True})
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+
+
+class TaskStatus(APIView):
+    """
+    Проверка статуса Celery задачи
+    """
+
+    def get(self, request, *args, **kwargs):
+        task_id = request.query_params.get('task_id')
+
+        if not task_id:
+            return Response(
+                {'error': 'Не указан task_id'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        task_result = AsyncResult(task_id)
+
+        response_data = {
+            'task_id': task_id,
+            'status': task_result.status,
+            'result': task_result.result
+        }
+
+        if task_result.failed():
+            response_data['error'] = str(task_result.result)
+            response_data['traceback'] = task_result.traceback
+
+        return Response(response_data, status=status.HTTP_200_OK)
