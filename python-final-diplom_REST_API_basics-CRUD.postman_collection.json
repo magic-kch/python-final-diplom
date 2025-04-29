@@ -1,0 +1,739 @@
+{
+	"info": {
+		"_postman_id": "c867636c-823a-484f-829c-183530f2f518",
+		"name": "python-final-diplom_REST API basics: CRUD",
+		"description": "DRF API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38700602"
+	},
+	"item": [
+		{
+			"name": "Contact",
+			"item": [
+				{
+					"name": "Contact",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 70c96819325babf3ada42c1310f8277e4b556334",
+								"description": "volos",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"Краснодар\",\n    \"street\": \"Автолюбителей\",\n    \"house\": \"1/7\",\n    \"structure\": \"5\",\n    \"building\": \"\",\n    \"apartment\": \"164\",\n    \"phone\": \"8912244412\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": \"1,\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"2\",\n    \"city\": \"Москва\",\n    \"street\": \"Ленина\",\n    \"house\": \"12\",\n    \"structure\": \"\",\n    \"building\": \"\",\n    \"apartment\": \"34\",\n    \"phone\": \"1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Basket",
+			"item": [
+				{
+					"name": "Basket",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/basket",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"basket"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Basket",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": \"[{\\\"product_info\\\": 5, \\\"quantity\\\": 2}, {\\\"product_info\\\": 7, \\\"quantity\\\": 3}]\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/basket",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"basket"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Basket",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": \"2,\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/basket",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"basket"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Basket",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": \"[{\\\"id\\\": 8, \\\"quantity\\\": 1}, {\\\"id\\\": 9, \\\"quantity\\\": 2}]\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/basket",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"basket"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account details",
+			"item": [
+				{
+					"name": "User",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/product_info?shop_id=1&category_id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"product_info"
+					],
+					"query": [
+						{
+							"key": "shop_id",
+							"value": "1"
+						},
+						{
+							"key": "category_id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Partner state",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/partner/state",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"partner",
+						"state"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Partner state",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"state\": \"True\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/partner/state",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"partner",
+						"state"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Partner Order",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/partner/orders",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"partner",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/partner/orders",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"partner",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order Copy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 3df0a85e31d2b4f4eaeda807baff79bbc0dc43a7",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"2\",\n    \"contact\": \"2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/order",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Log in",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"tema@volos.ru\",\n    \"password\": \"Vfhihgrgzr34$%^&HJ$\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/user/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Log in Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"magic.kch@yandex.ru\",\n    \"password\": \"Vfhihdsgsrdhs@%$\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/user/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\": \"Артемий\", \n    \"last_name\": \"Волосач\",\n    \"email\": \"tema@volos.ru\",\n    \"password\": \"Ckj;ysq_gfhjkm_11\",\n    \"company\": \"МТС\",\n    \"position\": \"Манагер\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/user/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Register Confirm",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"tema@volos.ru\",\n    \"token\": \"ed34614756740266b7e79ef6e0c0\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/user/register/confirm",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"user",
+						"register",
+						"confirm"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Reset pass",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"tema@volos.ru\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/user/password_reset",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"user",
+						"password_reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Reset pass confirm",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"944659fe3ae78754bff1483e03bf6ad606b4d400c82634\",\n    \"password\": \"Vfhihetya%^&*FDSF$\",\n    \"password_confirm\": \"Vfhihetya%^&*FDSF$\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/user/password_reset/confirm",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"user",
+						"password_reset",
+						"confirm"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Partner Update",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token ",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"http://127.0.0.1:5000/download_shop_yaml\"\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/partner/update",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"partner",
+						"update"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "http://localhost"
+		}
+	]
+}
