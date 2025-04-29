@@ -23,4 +23,14 @@
 
 ## API доступно по адресу `http://127.0.0.1/api/v1/`
 
+### Запуск тестовой страницы магазина 
+```bash
+  python shop_server.py
+```
+* Ссылка на магазин `http://127.0.0.1:5000/`
+* Ссылка на скачивание shop.yaml `http://127.0.0.1/download_shop_yaml`
+* Ссылка на скачивание shop1.yaml `http://127.0.0.1/download_shop1_yaml`
+
+### Пример запросов(необходимо импортровать в Postman)
+* [Примеры запросов](./python-final-diplom_REST_API_basics-CRUD.postman_collection.json)
 #### Полное описание API находится в [API_DOCS.md](./API_DOCS.md)
