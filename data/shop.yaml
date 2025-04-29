@@ -1,0 +1,104 @@
+shop: МТС
+categories:
+
+  - id: 225
+    name: Планшеты
+  - id: 226
+    name: Ноутбуки
+  - id: 227
+    name: Смарт-часы
+  - id: 228
+    name: Наушники
+  - id: 229
+    name: Телевизоры
+
+goods:
+
+  - id: 4216293
+    category: 225
+    model: samsung/galaxy/tab-s8
+    name: Планшет Samsung Galaxy Tab S8 128GB (черный)
+    price: 45000
+    price_rrc: 49990
+    quantity: 5
+    parameters:
+      "Диагональ (дюйм)": 11
+      "Разрешение (пикс)": 2560x1600
+      "Встроенная память (Гб)": 128
+      "Цвет": черный
+
+  - id: 4216294
+    category: 225
+    model: apple/ipad/air
+    name: Планшет Apple iPad Air 64GB (серебристый)
+    price: 35000
+    price_rrc: 39990
+    quantity: 12
+    parameters:
+      "Диагональ (дюйм)": 10.9
+      "Разрешение (пикс)": 2224x1668
+      "Встроенная память (Гб)": 64
+      "Цвет": серебристый
+
+  - id: 4216295
+    category: 225
+    model: lenovo/tab/m10
+    name: Планшет Lenovo Tab M10 32GB (черный)
+    price: 15000
+    price_rrc: 17990
+    quantity: 12
+    parameters:
+      "Диагональ (дюйм)": 10.1
+      "Разрешение (пикс)": 1280x800
+      "Встроенная память (Гб)": 32
+      "Цвет": черный
+  - id: 4216296
+    category: 226
+    model: asus/zenbook/13
+    name: Ноутбук Asus ZenBook 13 UX331UAL (серебристый)
+    price: 50000
+    price_rrc: 59990
+    quantity: 5
+    parameters:
+      "Диагональ (дюйм)": 13.3
+      "Разрешение (пикс)": 1920x1080
+      "Встроенная память (Гб)": 256
+      "Цвет": серебристый
+
+  - id: 4216297
+    category: 226
+    model: dell/inspiron/15
+    name: Ноутбук Dell Inspiron 15 5000 (черный)
+    price: 40000
+    price_rrc: 49990
+    quantity: 8
+    parameters:
+      "Диагональ (дюйм)": 15.6
+      "Разрешение (пикс)": 1920x1080
+      "Встроенная память (Гб)": 256
+      "Цвет": черный
+
+  - id: 4216298
+    category: 227
+    model: apple/watch/series5
+    name: Смарт-часы Apple Watch Series 5 40mm (серебристый)
+    price: 25000
+    price_rrc: 29990
+    quantity: 10
+    parameters:
+      "Диагональ (дюйм)": 1.78
+      "Разрешение (пикс)": 448x368
+      "Встроенная память (Гб)": 32
+      "Цвет": серебристый
+
+  - id: 4216299
+    category: 228
+    model: sony/wh-1000xm4
+    name: Наушники Sony WH-1000XM4 (черный)
+    price: 20000
+    price_rrc: 24990
+    quantity: 12
+    parameters:
+      "Тип": беспроводные
+      "Материал": пластик
+      "Цвет": черный

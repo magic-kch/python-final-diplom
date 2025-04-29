@@ -7,9 +7,19 @@ app = flask.Flask(__name__)
 @app.route('/', methods=['GET'])
 def home():
     return """
-    <a href="/download_shop_yaml">Скачать shop1.yaml</a>
+    <h1>Страница магазина</h1>
+    <p>Ссылки на проверку загрузки прайса:</p>
+    <ul>
+        <li> <a href="/download_shop_yaml">Скачать shop.yaml</a>
+        <li> <a href="/download_shop1_yaml">Скачать shop1.yaml</a>
+    </ul>
     """
+
 @app.route('/download_shop_yaml')
+def download_shop_yaml():
+    return send_file('data/shop.yaml', as_attachment=True)
+
+@app.route('/download_shop1_yaml')
 def download_shop1_yaml():
     return send_file('data/shop1.yaml', as_attachment=True)
 
