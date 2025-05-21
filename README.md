@@ -33,4 +33,7 @@
 
 ### Пример запросов(необходимо импортровать в Postman)
 * [Примеры запросов](./python-final-diplom_REST_API_basics-CRUD.postman_collection.json)
-#### Полное описание API находится в [API_DOCS.md](./API_DOCS.md)
+### Документация по проекту
+* [Swagger](http://127.0.0.1/docs/)
+* [Redoc](http://127.0.0.1/redoc/)
+* [Schema](http://127.0.0.1/schema/)

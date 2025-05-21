@@ -1,13 +1,16 @@
-from django.urls import path
+from django.urls import path, include
 from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
 
 from backend.views import PartnerUpdate, ConfirmAccount, RegisterAccount, LoginAccount, AccountDetails, CategoryView, \
     ShopView, ProductInfoView, BasketView, ContactView, PartnerState, PartnerOrders, OrderView, PasswordResetView, \
     TaskStatus
 
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+
 app_name = 'backend'
 
 urlpatterns = [
+
     path('partner/update', PartnerUpdate.as_view(), name='partner-update'),
     path('partner/state', PartnerState.as_view(), name='partner-state'),
     path('partner/orders', PartnerOrders.as_view(), name='partner-orders'),
@@ -25,5 +28,7 @@ urlpatterns = [
     path('order', OrderView.as_view(), name='order'),
     path('task/status', TaskStatus.as_view(), name='task-status'),
 
-    ]
-
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('docs/', SpectacularSwaggerView.as_view(url_name='backend:schema'), name='swagger-ui'),
+    path('redoc/', SpectacularRedocView.as_view(url_name='backend:schema'), name='redoc'),
+]
