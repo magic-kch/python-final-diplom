@@ -34,7 +34,7 @@ services:
     image: nginx
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "81:81"  # изменено с 80:80 на 81:81
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - backend-data:/python-final-diplom/
