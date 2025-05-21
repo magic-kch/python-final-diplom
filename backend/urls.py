@@ -1,11 +1,10 @@
-from django.urls import path, include
-from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
+from django.urls import path
+from django_rest_passwordreset.views import reset_password_confirm
 
 from backend.views import PartnerUpdate, ConfirmAccount, RegisterAccount, LoginAccount, AccountDetails, CategoryView, \
     ShopView, ProductInfoView, BasketView, ContactView, PartnerState, PartnerOrders, OrderView, PasswordResetView, \
     TaskStatus
 
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 app_name = 'backend'
 
