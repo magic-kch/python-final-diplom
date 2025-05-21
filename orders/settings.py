@@ -38,6 +38,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
 # Application definition
 
 INSTALLED_APPS = [
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,12 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_rest_passwordreset',
-
     'rest_framework',
     'rest_framework.authtoken',
-
     'drf_spectacular',
-
     'backend',
 ]
 
@@ -191,18 +189,38 @@ REST_FRAMEWORK = {
 if 'test' in sys.argv:
     REST_FRAMEWORK['DEFAULT_THROTTLE_CLASSES'] = []
 
+# DRF Spectacular settings
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Дипломный проект профессии «Python-разработчик: расширенный курс»',
     'DESCRIPTION': 'Backend-приложение для автоматизации закупок',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SCHEMA_PATH_PREFIX': '/api/v1/',
+    'SCHEMA_COERCE_PATH_PK_SUFFIX': False,
+    'SCHEMA_PATH_PREFIX_TRIM': True,
+    'SCHEMA_FILE_NAME': 'api_schema.json',  # Имя файла для схемы
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
+    'COMPONENT_SPLIT_REQUEST': True,
+    'COMPONENT_NO_READ_ONLY_REQUIRED': True,
+    'ENUM_NAME_OVERRIDES': {},
+    'ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE': False,
 }
 
+# JET settings
+JET_DEFAULT_THEME = 'light-gray'
+JET_SIDE_MENU_COMPACT = True
+# JET_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultIndexDashboard'
+# JET_APP_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultAppIndexDashboard'
+JET_INDEX_DASHBOARD = 'backend.dashboard.CustomIndexDashboard'
+JET_APP_INDEX_DASHBOARD = 'backend.dashboard.CustomAppIndexDashboard'
+JET_MODULE_YANDEX_METRIKA_CLIENT_ID = ''
+JET_MODULE_YANDEX_METRIKA_CLIENT_SECRET = ''
+JET_MODULE_GOOGLE_ANALYTICS_CLIENT_SECRETS_FILE = ''
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/1'
