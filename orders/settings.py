@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 
 from django.conf.global_settings import DEFAULT_FROM_EMAIL
 from dotenv import load_dotenv
@@ -31,7 +32,7 @@ SECRET_KEY = 'django-insecure-k&&$+6=+xn@$9n_@t5dvy)1)i@1r)q+fog!w%(z1td(4h8coj%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
 
 
 # Application definition
@@ -44,8 +45,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_rest_passwordreset',
+
     'rest_framework',
     'rest_framework.authtoken',
+
+    'drf_spectacular',
 
     'backend',
 ]
@@ -164,14 +168,34 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-
     ),
+
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'auth': '5/hour',  # уменьшаем лимит для тестов
+        'basket': '5/day',  # уменьшаем лимит для тестов
+        'orders': '5/day',  # уменьшаем лимит для тестов
+    },
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Отключаем throttling в тестовой среде
+if 'test' in sys.argv:
+    REST_FRAMEWORK['DEFAULT_THROTTLE_CLASSES'] = []
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Дипломный проект профессии «Python-разработчик: расширенный курс»',
+    'DESCRIPTION': 'Backend-приложение для автоматизации закупок',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 
@@ -180,5 +204,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/1'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
