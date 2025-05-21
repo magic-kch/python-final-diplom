@@ -28,7 +28,4 @@ urlpatterns = [
     path('order', OrderView.as_view(), name='order'),
     path('task/status', TaskStatus.as_view(), name='task-status'),
 
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('docs/', SpectacularSwaggerView.as_view(url_name='backend:schema'), name='swagger-ui'),
-    path('redoc/', SpectacularRedocView.as_view(url_name='backend:schema'), name='redoc'),
 ]

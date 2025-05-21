@@ -23,4 +23,7 @@ urlpatterns = [
     path(r'jet/', include('jet.urls', 'jet')),
     path('admin/', admin.site.urls),
     path('api/v1/', include('backend.urls', namespace='api_v1')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('docs/', SpectacularSwaggerView.as_view(url_name='backend:schema'), name='swagger-ui'),
+    path('redoc/', SpectacularRedocView.as_view(url_name='backend:schema'), name='redoc'),
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
