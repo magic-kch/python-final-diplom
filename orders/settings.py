@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'backend',
     'rollbar',
+    'cachalot',
 ]
 
 MIDDLEWARE = [
@@ -259,6 +260,45 @@ LOGGING = {
         },
     },
 }
+
+# Настройки кеширования
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'IGNORE_EXCEPTIONS': True,
+        }
+    }
+}
+
+# Настройки cachalot
+CACHALOT_ENABLED = True
+CACHALOT_TIMEOUT = 60 * 60 * 24  # 24 часа
+CACHALOT_CACHE = 'default'
+CACHALOT_UNCACHABLE_TABLES = (
+    'django_migrations',
+    'django_admin_log',
+)
+
+# Настройки для отладки
+if DEBUG:
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'cachalot.panels.CachalotPanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.logging.LoggingPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+    ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

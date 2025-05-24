@@ -25,6 +25,10 @@ from backend.serializers import UserSerializer, CategorySerializer, ShopSerializ
     OrderItemSerializer, OrderSerializer, ContactSerializer, PasswordResetSerializer
 from backend.signals import new_order
 
+from django.core.cache import cache
+from cachalot.api import invalidate
+from datetime import datetime
+
 class PasswordResetView(APIView):
     def post(self, request):
         serializer = PasswordResetSerializer(data=request.data)
@@ -788,3 +792,72 @@ class TaskStatus(APIView):
             response_data['traceback'] = task_result.traceback
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+
+class CachedDataView(APIView):
+    def get(self, request):
+        # Пример кеширования данных
+        key = 'cached_data'
+        
+        # Попытка получить данные из кэша
+        data = cache.get(key)
+        
+        if data is None:
+            # Если данных нет в кэше, создаем новые
+            data = {
+                'timestamp': datetime.now().isoformat(),
+                'data': 'Some cached data'
+            }
+            
+            # Кэшируем данные на 10 минут
+            cache.set(key, data, timeout=60*10)
+            
+        return JsonResponse(data)
+
+
+# Пример использования кэширования с помощью cachalot
+class ProductListView(APIView):
+    def get(self, request):
+        # При первом запросе данные будут получены из базы
+        # При последующих запросах данные будут взяты из кэша
+        products = Product.objects.all()
+        
+        if not products.exists():
+            return JsonResponse({
+                'status': 'success',
+                'message': 'No products found',
+                'products': []
+            })
+        
+        return JsonResponse({
+            'status': 'success',
+            'products': list(products.values())
+        })
+
+
+# Пример обновления кэша при изменении данных
+class ProductUpdateView(APIView):
+    def post(self, request, product_id):
+        try:
+            # Обновляем данные в базе
+            product = Product.objects.get(id=product_id)
+            # Здесь должен быть код для обновления продукта
+            
+            # Инвалидируем кэш для таблицы Product
+            invalidate(Product)
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': f'Product {product_id} updated successfully'
+            })
+            
+        except Product.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Product with id {product_id} not found'
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)

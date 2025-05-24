@@ -12,5 +12,5 @@ class RollbarTestView(View):
             import rollbar
             rollbar.report_exc_info()
             return HttpResponse(f"Error: {str(e)}", status=500)
-
+        
         return HttpResponse("Test view")
