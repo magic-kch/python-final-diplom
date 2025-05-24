@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'backend',
     'rollbar',
     'cachalot',
+    'silk',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +66,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'orders.rollbar_middleware.CustomRollbarNotifierMiddleware',  # Используем кастомный middleware
 ]
+
+if DEBUG:
+    MIDDLEWARE = [
+        'silk.middleware.SilkyMiddleware',
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'orders.rollbar_middleware.CustomRollbarNotifierMiddleware',
+    ]
 
 ROOT_URLCONF = 'orders.urls'
 
@@ -281,6 +295,15 @@ CACHALOT_UNCACHABLE_TABLES = (
     'django_migrations',
     'django_admin_log',
 )
+
+# Настройки для Silk
+SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER_BINARY = True
+SILKY_PYTHON_PROFILER_RESULT_PATH = 'profiling_results'
+SILKY_INTERCEPT_PERCENT = 100  # Профилировать все запросы
+SILKY_MAX_REQUEST_BODY_SIZE = -1  # Сохранять все тела запросов
+SILKY_MAX_RESPONSE_BODY_SIZE = -1  # Сохранять все тела ответов
+SILKY_META = True
 
 # Настройки для отладки
 if DEBUG:
