@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 import sys
+import re
 
 from django.conf.global_settings import DEFAULT_FROM_EMAIL
 from dotenv import load_dotenv
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_spectacular',
     'backend',
+    'rollbar',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'orders.rollbar_middleware.CustomRollbarNotifierMiddleware',  # Используем кастомный middleware
 ]
 
 ROOT_URLCONF = 'orders.urls'
@@ -216,6 +219,46 @@ JET_APP_INDEX_DASHBOARD = 'backend.dashboard.CustomAppIndexDashboard'
 JET_MODULE_YANDEX_METRIKA_CLIENT_ID = ''
 JET_MODULE_YANDEX_METRIKA_CLIENT_SECRET = ''
 JET_MODULE_GOOGLE_ANALYTICS_CLIENT_SECRETS_FILE = ''
+
+# Rollbar настройки
+ROLLBAR = {
+    'access_token': os.getenv('ROLLBAR_ACCESS_TOKEN', 'be75b34451f14b46b669b69608f1f1f8'),
+    'environment': 'development' if DEBUG else 'production',
+    'code_version': '1.0',
+    'root': BASE_DIR,
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'rollbar': {
+            'level': 'ERROR',
+            'class': 'rollbar.logger.RollbarHandler',
+            'access_token': os.getenv('ROLLBAR_ACCESS_TOKEN', 'be75b34451f14b46b669b69608f1f1f8'),
+            'environment': 'production' if not DEBUG else 'development',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'rollbar'],
+            'level': 'INFO',
+        },
+        'celery': {
+            'handlers': ['console', 'rollbar'],
+            'level': 'INFO',
+        },
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
