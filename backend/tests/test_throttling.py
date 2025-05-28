@@ -5,13 +5,16 @@ import time
 from django.urls import reverse
 
 @pytest.mark.django_db
-def test_login_throttling(api_client, test_auth_data, create_test_user):
+def test_login_throttling(api_client, test_token, test_auth_data, create_test_user):
     """Тест throttling для авторизации"""
-    url = reverse('backend:user-login')
-
     # Устанавливаем активность пользователя
     create_test_user.is_active = True
     create_test_user.save()
+    
+    # Используем аутентифицированный клиент
+    api_client.credentials(HTTP_AUTHORIZATION=f'Token {test_token.key}')
+    
+    url = reverse('backend:user-login')
 
     # Делаем 5 успешных запросов (предел для auth: 5/hour)
     for i in range(5):

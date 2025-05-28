@@ -64,6 +64,8 @@ services:
           condition: service_healthy
         redis:
           condition: service_started
+        backend:
+          condition: service_started
     command: celery -A backend.celery_app worker --loglevel=info
     volumes:
       - backend-data:/python-final-diplom/

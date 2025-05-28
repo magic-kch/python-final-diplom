@@ -11,12 +11,6 @@ env/
 ### Project specific ###
 settings_local.py
 
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-.idea/
-
 # C extensions
 *.so
 
@@ -99,7 +93,6 @@ celerybeat-schedule
 # Environments
 .env
 .venv
-env/
 venv/
 ENV/
 env.bak/
@@ -117,3 +110,10 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# coverage
+coverage.xml
+.coverage
+htmlcov/
+
+static/

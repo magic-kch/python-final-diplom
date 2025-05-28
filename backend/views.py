@@ -191,6 +191,7 @@ class LoginAccount(APIView):
     """
     Класс для авторизации пользователей
     """
+    throttle_scope = 'auth'
 
     # Авторизация методом POST
     def post(self, request, *args, **kwargs):
@@ -286,8 +287,9 @@ class BasketView(APIView):
     - delete: Remove an item from the user's basket.
 
     Attributes:
-    - None
+    - throttle_scope: The scope for rate limiting this view
     """
+    throttle_scope = 'basket'
 
     # получить корзину
     def get(self, request, *args, **kwargs):

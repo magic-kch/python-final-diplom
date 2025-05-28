@@ -31,10 +31,12 @@ urlpatterns = [
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('test-rollbar/', RollbarTestView.as_view(), name='test-rollbar'),
+    path('', include('social_django.urls', namespace='social')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Silk URL (только в режиме отладки)
 if settings.DEBUG:
     urlpatterns += [
         path('silk/', include('silk.urls', namespace='silk')),
+
     ]

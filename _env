@@ -14,3 +14,7 @@ DB_USER=diplom_user
 DB_PASSWORD=pg_postgres
 DB_HOST=postgres
 DB_PORT=5432
+
+# google auth
+GOOGLE_OAUTH2_CLIENT_ID=ваш_google_client_id
+GOOGLE_OAUTH2_CLIENT_SECRET=ваш_google_client_secret

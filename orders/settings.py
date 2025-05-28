@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'rollbar',
     'cachalot',
     'silk',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -93,6 +94,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends', #social-auth
+                'social_django.context_processors.login_redirect', #social-auth
             ],
         },
     },
@@ -162,6 +165,36 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # модель пользователя
 AUTH_USER_MODEL = 'backend.User'
 
+# Social Auth Configuration
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+# Google OAuth2 settings
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_OAUTH2_CLIENT_ID', '')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_OAUTH2_CLIENT_SECRET', '')
+
+# Redirect URLs
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Social Auth Pipeline
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
+# SMTP
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # для отладки в консоли
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -204,8 +237,8 @@ REST_FRAMEWORK = {
 }
 
 # Отключаем throttling в тестовой среде
-if 'test' in sys.argv:
-    REST_FRAMEWORK['DEFAULT_THROTTLE_CLASSES'] = []
+# if 'test' in sys.argv:
+#     REST_FRAMEWORK['DEFAULT_THROTTLE_CLASSES'] = []
 
 # DRF Spectacular settings
 SPECTACULAR_SETTINGS = {
