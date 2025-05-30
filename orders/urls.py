@@ -34,9 +34,9 @@ urlpatterns = [
     path('', include('social_django.urls', namespace='social')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# Silk URL (только в режиме отладки)
+# Добавляем маршруты для медиафайлов в режиме отладки
 if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
         path('silk/', include('silk.urls', namespace='silk')),
-
     ]

@@ -160,6 +160,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 #     os.path.join(BASE_DIR, 'static'),
 # ]
 
+# Media files (user uploaded files like avatars)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Максимальный размер загружаемых файлов (1MB)
+MAX_UPLOAD_SIZE = 1 * 1024 * 1024  # 1MB
+
+# Настройки для FileUploadParser
+FILE_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE
+DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 # модель пользователя

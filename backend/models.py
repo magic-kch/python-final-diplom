@@ -6,6 +6,29 @@ from django.utils.html import format_html
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.tokens import get_token_generator
+from django.core.exceptions import ValidationError
+import os
+
+def validate_image_size(value):
+    """Проверяет, что размер файла не превышает 1 МБ"""
+    limit = 1 * 1024 * 1024  # 1MB
+    if value.size > limit:
+        raise ValidationError('Размер файла не должен превышать 1 МБ.')
+
+def user_avatar_upload_to(instance, filename):
+    """
+    Генерирует путь для сохранения аватарки пользователя.
+    Формат: users/avatars/<user_email>.<расширение файла>
+    """
+    # Получаем расширение файла
+    ext = filename.split('.')[-1].lower()
+    # Создаем имя файла на основе полного email пользователя
+    # Заменяем @ на _ и убираем точки
+    email_name = instance.email.replace('@', '_').replace('.', '_')
+    # Формируем новое имя файла
+    filename = f"{email_name}.{ext}"
+    # Возвращаем полный путь
+    return os.path.join('users/avatars', filename)
 
 STATE_CHOICES = (
     ('basket', 'Статус корзины'),
@@ -67,6 +90,13 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     company = models.CharField(verbose_name='Компания', max_length=40, blank=True)
     position = models.CharField(verbose_name='Должность', max_length=40, blank=True)
+    avatar = models.ImageField(
+        upload_to=user_avatar_upload_to,  
+        verbose_name='Аватар', 
+        blank=True, 
+        null=True,
+        validators=[validate_image_size]  
+    )
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         _('username'),

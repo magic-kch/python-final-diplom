@@ -28,6 +28,7 @@ from backend.signals import new_order
 from django.core.cache import cache
 from cachalot.api import invalidate
 from datetime import datetime
+import os
 
 class PasswordResetView(APIView):
     def post(self, request):
@@ -126,7 +127,7 @@ class AccountDetails(APIView):
 
     Methods:
     - get: Retrieve the details of the authenticated user.
-    - post: Update the account details of the authenticated user.
+    - post: Update the account details of the authenticated user, including avatar.
 
     Attributes:
     - None
@@ -152,37 +153,72 @@ class AccountDetails(APIView):
     # Редактирование методом POST
     def post(self, request, *args, **kwargs):
         """
-                Update the account details of the authenticated user.
-
-                Args:
-                - request (Request): The Django request object.
-
-                Returns:
-                - JsonResponse: The response indicating the status of the operation and any errors.
+                Update the account details of the authenticated user, including avatar.
+                If avatar is provided, it will replace the existing one.
                 """
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
-        # проверяем обязательные аргументы
 
+        # Handle password change if provided
         if 'password' in request.data:
-            errors = {}
-            # проверяем пароль на сложность
             try:
                 validate_password(request.data['password'])
+                request.user.set_password(request.data['password'])
+                request.user.save()
             except Exception as password_error:
                 error_array = []
-                # noinspection PyTypeChecker
                 for item in password_error:
                     error_array.append(item)
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
-            else:
-                request.user.set_password(request.data['password'])
 
-        # проверяем остальные данные
+        # Handle avatar upload if provided
+        if 'avatar' in request.FILES:
+            avatar = request.FILES['avatar']
+            
+            # Проверяем размер файла (1MB = 1048576 bytes)
+            max_size = 1 * 1024 * 1024
+            if avatar.size > max_size:
+                return JsonResponse(
+                    {'Status': False, 'Error': 'Размер файла не должен превышать 1 МБ'},
+                    status=400
+                )
+            
+            # Удаляем старый аватар, если он существует
+            if request.user.avatar:
+                try:
+                    # Получаем путь к файлу
+                    old_avatar = request.user.avatar
+                    # Сначала сохраняем новый аватар, чтобы не потерять ссылку при ошибке
+                    request.user.avatar = avatar
+                    request.user.save()
+                    # Удаляем старый файл после успешного сохранения нового
+                    if os.path.isfile(old_avatar.path):
+                        os.remove(old_avatar.path)
+                except Exception as e:
+                    return JsonResponse(
+                        {'Status': False, 'Error': f'Ошибка при замене аватарки: {str(e)}'},
+                        status=500
+                    )
+            else:
+                # Если старого аватара не было, просто сохраняем новый
+                request.user.avatar = avatar
+                request.user.save()
+            
+            return JsonResponse({
+                'Status': True, 
+                'Message': 'Аватар успешно обновлен',
+                'avatar_url': request.user.avatar.url if request.user.avatar else None
+            })
+
+        # Handle other user data
         user_serializer = UserSerializer(request.user, data=request.data, partial=True)
         if user_serializer.is_valid():
             user_serializer.save()
-            return JsonResponse({'Status': True})
+            return JsonResponse({
+                'Status': True, 
+                'Message': 'Данные успешно обновлены',
+                'avatar_url': request.user.avatar.url if request.user.avatar else None
+            })
         else:
             return JsonResponse({'Status': False, 'Errors': user_serializer.errors})
 
