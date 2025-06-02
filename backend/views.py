@@ -301,15 +301,71 @@ class ProductInfoView(APIView):
         if category_id:
             query = query & Q(product__category_id=category_id)
 
-        # фильтруем и отбрасываем дуликаты
+        # фильтруем и отбрасываем дубликаты
         queryset = ProductInfo.objects.filter(
             query).select_related(
             'shop', 'product__category').prefetch_related(
             'product_params', 'product_params__parameter').distinct()
 
-        serializer = ProductInfoSerializer(queryset, many=True)
+        serializer = ProductInfoSerializer(queryset, many=True, context={'request': request})
 
         return Response(serializer.data)
+
+
+class ProductInfoImageView(APIView):
+    """
+    Класс для обновления изображений товаров
+    """
+
+    def patch(self, request, pk, *args, **kwargs):
+        """
+        Обновление изображения товара
+
+        Аргументы:
+            request: Объект запроса, содержащий файл изображения
+            pk: ID товара (ProductInfo)
+
+        Возвращает:
+            Response: Ответ с обновленной информацией о товаре или сообщением об ошибке
+        """
+        try:
+            # Получаем товар по ID
+            product_info = ProductInfo.objects.get(id=pk)
+        except ProductInfo.DoesNotExist:
+            return Response(
+                {'Status': False, 'Error': 'Товар не найден'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Проверяем права доступа
+        if not request.user.is_authenticated or request.user.type != 'shop':
+            return Response(
+                {'Status': False, 'Error': 'Только магазины могут обновлять товары'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Получаем файл изображения из запроса
+        image_file = request.FILES.get('image')
+        if not image_file:
+            return Response(
+                {'Status': False, 'Error': 'Не указано изображение'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Обновляем изображение
+            product_info.image = image_file
+            product_info.save()
+
+            # Возвращаем обновленные данные
+            serializer = ProductInfoSerializer(product_info, context={'request': request})
+            return Response(serializer.data)
+
+        except Exception as e:
+            return Response(
+                {'Status': False, 'Error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class BasketView(APIView):

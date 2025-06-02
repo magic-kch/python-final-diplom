@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.tokens import get_token_generator
 from django.core.exceptions import ValidationError
 import os
+import time
 
 def validate_image_size(value):
     """Проверяет, что размер файла не превышает 1 МБ"""
@@ -29,6 +30,16 @@ def user_avatar_upload_to(instance, filename):
     filename = f"{email_name}.{ext}"
     # Возвращаем полный путь
     return os.path.join('users/avatars', filename)
+
+def product_image_upload_to(instance, filename):
+    """
+    Генерирует путь для сохранения фотографии товара.
+    Формат: /media/products/image/<product_id>_<shop_id>_<timestamp>.<расширение файла>
+    """
+    ext = filename.split('.')[-1].lower()
+    timestamp = int(time.time())
+    filename = f"{instance.product.id}_{instance.shop.id}_{timestamp}.{ext}"
+    return os.path.join('products/image', filename)  # Путь относительно MEDIA_ROOT
 
 STATE_CHOICES = (
     ('basket', 'Статус корзины'),
@@ -187,6 +198,13 @@ class ProductInfo(models.Model):
     quantity = models.PositiveIntegerField(verbose_name="Количество")
     price = models.PositiveIntegerField(verbose_name='Цена')
     price_rrc = models.PositiveIntegerField(verbose_name="Рекомендуемая розничная цена")
+    image = models.ImageField(
+        upload_to=product_image_upload_to,
+        verbose_name='Изображение товара',
+        blank=True,
+        null=True,
+        validators=[validate_image_size]  # Используем существующий валидатор размера
+    )
 
     class Meta:
         verbose_name = 'Информация о продукте'
@@ -194,8 +212,10 @@ class ProductInfo(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['product', 'shop', 'external_id'], name='unique_product_info'),
         ]
+
     def __str__(self):
-        return f"{self.product}"
+        return f'{self.product.name} - {self.shop.name} - {self.price}'
+
 
 class Parameter(models.Model):
     objects = models.manager.Manager()

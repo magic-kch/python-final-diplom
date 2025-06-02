@@ -60,17 +60,19 @@ services:
     container_name: celery
     restart: unless-stopped
     depends_on:
-        postgres:
-          condition: service_healthy
-        redis:
-          condition: service_started
-        backend:
-          condition: service_started
-    command: celery -A backend.celery_app worker --loglevel=info
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: >
+      bash -c "
+        pip install -r requirements.txt &&
+        python manage.py migrate &&
+        celery -A backend.celery_app worker --loglevel=info
+      "
     volumes:
-      - backend-data:/python-final-diplom/
-#    volumes:
-#      - pgdata2:/var/lib/postgresql/data
+      - .:/python-final-diplom/
+    working_dir: /python-final-diplom
 
 volumes:
   pgdata2:
