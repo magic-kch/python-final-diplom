@@ -9,6 +9,8 @@ from django_rest_passwordreset.tokens import get_token_generator
 from django.core.exceptions import ValidationError
 import os
 import time
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 def validate_image_size(value):
     """Проверяет, что размер файла не превышает 1 МБ"""
@@ -204,6 +206,24 @@ class ProductInfo(models.Model):
         blank=True,
         null=True,
         validators=[validate_image_size]  # Используем существующий валидатор размера
+    )
+    thumbnail_small = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(100, 100)],
+        format='JPEG',
+        options={'quality': 80}
+    )
+    thumbnail_medium = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(300, 300)],
+        format='JPEG',
+        options={'quality': 85}
+    )
+    thumbnail_large = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(600, 600)],
+        format='JPEG',
+        options={'quality': 90}
     )
 
     class Meta:

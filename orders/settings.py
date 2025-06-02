@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'cachalot',
     'silk',
     'social_django',
+    'imagekit',
 ]
 
 MIDDLEWARE = [

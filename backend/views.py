@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 
 from ujson import loads as load_json
 
-from backend.tasks import reset_password_request_token, update_partner_price
+from backend.tasks import reset_password_request_token, update_partner_price, generate_thumbnails
 from backend.models import Shop, Product, Category, Parameter, User, OrderItem, Order, Contact, \
     ConfirmEmailToken, ProductInfo
 from backend.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
@@ -318,16 +318,6 @@ class ProductInfoImageView(APIView):
     """
 
     def patch(self, request, pk, *args, **kwargs):
-        """
-        Обновление изображения товара
-
-        Аргументы:
-            request: Объект запроса, содержащий файл изображения
-            pk: ID товара (ProductInfo)
-
-        Возвращает:
-            Response: Ответ с обновленной информацией о товаре или сообщением об ошибке
-        """
         try:
             # Получаем товар по ID
             product_info = ProductInfo.objects.get(id=pk)
@@ -337,33 +327,48 @@ class ProductInfoImageView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # Проверяем права доступа
-        if not request.user.is_authenticated or request.user.type != 'shop':
+        # Проверяем, что файл изображения передан
+        if 'image' not in request.FILES:
             return Response(
-                {'Status': False, 'Error': 'Только магазины могут обновлять товары'},
-                status=status.HTTP_403_FORBIDDEN
+                {'Status': False, 'Error': 'Изображение не найдено в запросе'},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Получаем файл изображения из запроса
-        image_file = request.FILES.get('image')
-        if not image_file:
+        image_file = request.FILES['image']
+
+        # Проверяем тип файла
+        if not image_file.content_type.startswith('image/'):
             return Response(
-                {'Status': False, 'Error': 'Не указано изображение'},
+                {'Status': False, 'Error': 'Файл не является изображением'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
-            # Обновляем изображение
+            print(f"Сохранение изображения для ProductInfo {pk}...")
+
+            # Сохраняем новое изображение
             product_info.image = image_file
             product_info.save()
+            print(f"Изображение сохранено по пути: {product_info.image.path}")
+
+            # Запускаем асинхронную задачу для генерации миниатюр
+            task = generate_thumbnails.delay(product_info.id)
+            print(f"Задача на генерацию миниатюр запущена с ID: {task.id}")
 
             # Возвращаем обновленные данные
             serializer = ProductInfoSerializer(product_info, context={'request': request})
-            return Response(serializer.data)
+            return Response({
+                'Status': True,
+                'Message': 'Изображение успешно загружено',
+                'TaskId': str(task.id),
+                'Data': serializer.data
+            })
 
         except Exception as e:
+            error_msg = f"Ошибка при сохранении изображения: {str(e)}"
+            print(error_msg)
             return Response(
-                {'Status': False, 'Error': str(e)},
+                {'Status': False, 'Error': error_msg},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 

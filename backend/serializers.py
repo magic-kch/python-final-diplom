@@ -67,19 +67,35 @@ class ProductInfoSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     product_params = ProductParameterSerializer(read_only=True, many=True)
     image = serializers.SerializerMethodField()
+    thumbnail_small = serializers.SerializerMethodField()
+    thumbnail_medium = serializers.SerializerMethodField()
+    thumbnail_large = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductInfo
-        fields = ('id', 'model', 'product', 'shop', 'quantity', 'price', 'price_rrc', 'product_params', 'image')
+        fields = ('id', 'model', 'product', 'shop', 'quantity', 'price', 'price_rrc', 'product_params', 'image', 'thumbnail_small', 'thumbnail_medium', 'thumbnail_large')
         read_only_fields = ('id',)
 
     def get_image(self, obj):
-        if obj.image:
-            request = self.context.get('request')
-            if request is not None:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
-        return None
+        return self._get_image_url(obj.image)
+        
+    def get_thumbnail_small(self, obj):
+        return self._get_image_url(obj.thumbnail_small)
+        
+    def get_thumbnail_medium(self, obj):
+        return self._get_image_url(obj.thumbnail_medium)
+        
+    def get_thumbnail_large(self, obj):
+        return self._get_image_url(obj.thumbnail_large)
+    
+    def _get_image_url(self, image_field):
+        if not image_field:
+            return None
+            
+        request = self.context.get('request')
+        if request is not None:
+            return request.build_absolute_uri(image_field.url)
+        return image_field.url
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

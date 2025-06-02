@@ -7,6 +7,11 @@ from django.db import transaction
 from django_rest_passwordreset.models import ResetPasswordToken
 from requests import get
 from yaml import load as load_yaml, Loader
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from io import BytesIO
+from PIL import Image
+import os
 
 from backend.models import (
     User,
@@ -163,3 +168,66 @@ def update_partner_price(self, shop_id, url):
 
     except Exception as e:
         self.retry(exc=e, countdown=60, max_retries=3)
+
+
+@shared_task
+def generate_thumbnails(product_info_id):
+    """
+    Генерирует миниатюры для изображения товара
+
+    Аргументы:
+        product_info_id (int): ID записи ProductInfo
+    """
+    try:
+        from backend.models import ProductInfo
+        from time import sleep
+        import os
+        from django.conf import settings
+
+        # Получаем объект ProductInfo
+        product_info = ProductInfo.objects.get(id=product_info_id)
+
+        if not product_info.image:
+            print(f"Изображение не найдено для ProductInfo {product_info_id}")
+            return False
+
+        # Полный путь к файлу
+        file_path = os.path.join(settings.MEDIA_ROOT, product_info.image.name)
+
+        # Проверяем существование файла
+        if not os.path.exists(file_path):
+            print(f"Файл изображения не найден по пути: {file_path}")
+            return False
+
+        print(f"Начинаем генерацию миниатюр для {file_path}")
+
+        # Генерируем миниатюры
+        try:
+            # Маленькая миниатюра
+            if product_info.thumbnail_small:
+                with product_info.thumbnail_small.open('rb') as f:
+                    pass
+
+            # Средняя миниатюра
+            if product_info.thumbnail_medium:
+                with product_info.thumbnail_medium.open('rb') as f:
+                    pass
+
+            # Большая миниатюра
+            if product_info.thumbnail_large:
+                with product_info.thumbnail_large.open('rb') as f:
+                    pass
+
+            print(f"Миниатюры успешно сгенерированы для ProductInfo {product_info_id}")
+            return True
+
+        except Exception as e:
+            print(f"Ошибка при генерации миниатюр: {str(e)}")
+            return False
+
+    except ProductInfo.DoesNotExist:
+        print(f"ProductInfo с id {product_info_id} не найден")
+        return False
+    except Exception as e:
+        print(f"Ошибка в задаче generate_thumbnails: {str(e)}")
+        return False
